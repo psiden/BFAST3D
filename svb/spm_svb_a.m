@@ -1,5 +1,5 @@
 function [block] = spm_svb_a(Y,block)
-% Modified version for SVB, Per Siden 2016-06-09
+% Modified version for SVB, Per Siden 2016-06-09, 2017-01-10
 %
 % Update AR coefficients in VB GLM-AR model 
 % FORMAT [block] = spm_vb_a (Y,block)
@@ -98,7 +98,7 @@ block.a_mean(block.SVB.HaInd) = block.a_mean;
 block.SVB.PCGaIterSave = [block.SVB.PCGaIterSave,iter];
 
 % samples for expectation approximation
-block.SVB.cholJData = chol(block.SVB.JData);
+block.SVB.cholJData = spm_svb_cholSafe(block.SVB.JData,1e-8);
 block.SVB.baSamp = blkdiag(block.SVB.GaBetaList{:})' * block.SVB.aSampPriorRand + ...
       block.SVB.cholJData(block.SVB.HaInd,block.SVB.HaInd)' * block.SVB.aSampDataRand + ...
       repmat(block.SVB.JTildeNuMat(:),1,block.SVB.Ns);

@@ -1,5 +1,5 @@
 function [block] = spm_svb_w(Y,block)
-% Modified version for SVB, Per Siden 2016-06-09
+% Modified version for SVB, Per Siden 2016-06-09, 2017-01-10
 %
 % Variational Bayes for GLM-AR modelling in a block - update w
 % FORMAT [block] = spm_vb_w (Y,block)
@@ -127,7 +127,7 @@ block.w_mean(block.SVB.HwInd) = block.w_mean;
 block.SVB.w = reshape(block.w_mean,K,N);
 
 % samples for expectation approximation
-block.SVB.cholBData = chol(block.SVB.BData);
+block.SVB.cholBData = spm_svb_cholSafe(block.SVB.BData,1e-8);
 block.SVB.bSamp = blkdiag(block.SVB.GwAlphaList{:})' * block.SVB.wSampPriorRand + ...
       block.SVB.cholBData(block.SVB.HwInd,block.SVB.HwInd)' * block.SVB.wSampDataRand + ...
       repmat(block.SVB.BTildeMuMat(:),1,block.SVB.Ns);
