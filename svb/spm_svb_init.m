@@ -57,7 +57,12 @@ if P <= 0
     block.SVB.iBI = zeros(N*K,1);
     block.SVB.iBI(block.SVB.BI) = 1:(N*K);
     block.SVB.BTildeP = block.SVB.BTilde(block.SVB.BI,block.SVB.BI);
-    block.SVB.icholBTildeP = ichol(block.SVB.BTildeP);
+    try
+        block.SVB.icholBTildeP = ichol(block.SVB.BTildeP);
+    catch
+        disp('Warning: ichol failed at first iteration');
+        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP),0,N,N));
+    end  
     block.SVB.NGw = size(blkdiag(block.SVB.GwAlphaList{:}),1);
     block.SVB.BTildeMuMat = zeros(N,K); % BTilde * mu on (N x K)-form
     block.SVB.w_meanP = block.w_mean(block.SVB.HwInd);
@@ -177,7 +182,12 @@ else
     block.SVB.iBI = zeros(N*K,1);
     block.SVB.iBI(block.SVB.BI) = 1:(N*K);
     block.SVB.BTildeP = block.SVB.BTilde(block.SVB.BI,block.SVB.BI);
-    block.SVB.icholBTildeP = ichol(block.SVB.BTildeP);
+    try
+        block.SVB.icholBTildeP = ichol(block.SVB.BTildeP);
+    catch
+        disp('Warning: ichol failed at first iteration');
+        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP),0,N,N));
+    end 
     block.SVB.NGw = size(blkdiag(block.SVB.GwAlphaList{:}),1);
     block.SVB.DA = zeros(P,K,N);
     block.SVB.BTildeMuMat = zeros(N,K); % BTilde * mu on (N x K)-form
@@ -239,7 +249,12 @@ else
     block.SVB.iJI = zeros(N*P,1);
     block.SVB.iJI(block.SVB.JI) = 1:(N*P);
     block.SVB.JTildeP = block.SVB.JTilde(block.SVB.JI,block.SVB.JI);
-    block.SVB.icholJTildeP = ichol(block.SVB.JTildeP);
+    try
+        block.SVB.icholJTildeP = ichol(block.SVB.JTildeP);
+    catch
+        disp('Warning: ichol failed at first iteration');
+        block.SVB.icholJTildeP = spdiags(sqrt(diag(block.SVB.JTildeP),0,N,N));
+    end  
     block.SVB.NGa = size(blkdiag(block.SVB.GaBetaList{:}),1);
     block.SVB.RW = zeros(K,P,N);
     block.SVB.JTildeNuMat = zeros(N,P); % JTilde * nu on (N x P)-form
