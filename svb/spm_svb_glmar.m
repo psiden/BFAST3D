@@ -225,9 +225,31 @@ if block.update_F
     block.KL  = KL;
 end
 
-for n = 1:N,
-    block.w_cov{n} = cov(block.SVB.wSampSim(((n-1)*k+1):n*k,:)');
+% Added by Per Siden 2017-05-24, estimation by simple RBMC, Siden et al.
+% (2017, Efficient Covariance Approximations for Large Sparse Precision
+% Matrices)
+demeanSim = block.SVB.wSampSim - block.w_mean;
+BTildeHw = block.Hw*block.SVB.BTilde*block.Hw';
+BmDB = spdiags(zeros(N*k,2*k-1),(-k+1):(k-1),BTildeHw);
+BmDBX = BmDB * demeanSim;
+DB = BTildeHw - BmDB;
+invCholDB = chol(DB) \ speye(N*k);
+invDB = invCholDB * invCholDB';
+kappa = invDB * BmDBX;
+kappa2 = permute(reshape(kappa,k,N,block.SVB.Ns),[2 3 1]);
+kappa3 = repmat(reshape(kappa2,N*block.SVB.Ns,k),[1,1,k]);
+kappa4 = reshape(kappa3 .* permute(kappa3,[1 3 2]),[N,block.SVB.Ns,k,k]);
+kappa5 = permute(squeeze(sum(kappa4,2)),[2,3,1]);
+[i2,j2] = ind2sub([N*k,N*k],find(kron(speye(N),ones(k))==1));
+w_cov2Mat = invDB +1/block.SVB.Ns*sparse(i2,j2,kappa5(:),N*k,N*k);
+for n = 1:N
+    block.w_cov{n} = w_cov2Mat((n-1)*k+1:n*k,(n-1)*k+1:n*k);
 end
+
+% OLD
+% for n = 1:N
+%     block.w_cov{n} = cov(block.SVB.wSampSim(((n-1)*k+1):n*k,:)');
+% end
     
 block = spm_svb_gamma(Y,block);
 
