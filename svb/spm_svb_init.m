@@ -61,7 +61,7 @@ if P <= 0
         block.SVB.icholBTildeP = ichol(block.SVB.BTildeP);
     catch
         disp('Warning: ichol failed at first iteration');
-        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP),0,N,N));
+        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP)),0,N*K,N*K);
     end  
     block.SVB.NGw = size(blkdiag(block.SVB.GwAlphaList{:}),1);
     block.SVB.BTildeMuMat = zeros(N,K); % BTilde * mu on (N x K)-form
@@ -186,7 +186,7 @@ else
         block.SVB.icholBTildeP = ichol(block.SVB.BTildeP);
     catch
         disp('Warning: ichol failed at first iteration');
-        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP),0,N,N));
+        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP)),0,N*K,N*K);
     end 
     block.SVB.NGw = size(blkdiag(block.SVB.GwAlphaList{:}),1);
     block.SVB.DA = zeros(P,K,N);
@@ -253,7 +253,7 @@ else
         block.SVB.icholJTildeP = ichol(block.SVB.JTildeP);
     catch
         disp('Warning: ichol failed at first iteration');
-        block.SVB.icholJTildeP = spdiags(sqrt(diag(block.SVB.JTildeP),0,N,N));
+        block.SVB.icholJTildeP = spdiags(sqrt(diag(block.SVB.JTildeP)),0,N*P,N*P);
     end  
     block.SVB.NGa = size(blkdiag(block.SVB.GaBetaList{:}),1);
     block.SVB.RW = zeros(K,P,N);

@@ -109,7 +109,7 @@ try
 catch
     if block.SVB.it == 1
         disp('Warning: ichol failed at first iteration');
-        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP),0,N,N));
+        block.SVB.icholBTildeP = spdiags(sqrt(diag(block.SVB.BTildeP)),0,N*K,N*K);
     else
         disp('Warning: ichol failed');
     end
