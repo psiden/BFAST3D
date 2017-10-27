@@ -1,6 +1,6 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PURPOSE:      Read files like condition_key.txt or task_contrasts.txt and
-%               output as cell-matrix of character arrays
+% PURPOSE:      Read files like condition_key.txt, task_contrasts.txt or 
+%               events.tsv and output as cell-matrix of character arrays
 %
 % AUTHOR:       Per Siden
 %               Division of Statistics and Machine Learning
@@ -20,7 +20,7 @@ tline = fgets(fileID);
 i = 1;
 while ischar(tline)
 %     disp(tline)
-    spaceInd = strfind(tline,' ');
+    spaceInd = [strfind(tline,' '),strfind(tline,char(9))];
     cellMat{i,1} = tline(1:spaceInd(1)-1);
     cellMat{i,2} = tline(spaceInd(1)+1:spaceInd(2)-1);
     cellMat{i,3} = tline(spaceInd(2)+1:end);
