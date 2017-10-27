@@ -35,14 +35,14 @@ MCMCMethod = 'MCMC3D';
 samplingMethod = 'PCG';
 runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
 
-Compute marginal and joint PPMs
+% Compute marginal and joint PPMs
 addpath(SPMPath);
 
-Requires Tools for NIfTI and ANALYZE image Matlab-package
+% Requires Tools for NIfTI and ANALYZE image Matlab-package
 computePPMs(dS.outputPath,subject,VBMethod);
 computePPMs(dS.outputPath,subject,MCMCMethod);
 
-Requires excursions R-package
+% Requires excursions R-package
 contrastNbr = 5;
 computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,1)
 
