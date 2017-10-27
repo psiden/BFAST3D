@@ -1,9 +1,7 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PURPOSE:      Run MCMC spatial model estimation
 %
-% INPUT:        outputPath - string containing output folder (VB results in
-%               the same folder is required, to be used as input here)
-%               subject - subject number (int)
+% INPUT:        dS - data settings struct
 %               estimationMethod - string containing estimation method,
 %                                  possible options: MCMC2D, MCMC3D.
 %               VBMethod - string containing VB estimation method, possible 
@@ -17,17 +15,18 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2016-06-09
-% REVISED:      
+% REVISED:      2017-10-27
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function runMCMC(outputPath,subject,estimationMethod,VBMethod,samplingMethod)
+function runMCMC(dS,estimationMethod,VBMethod,samplingMethod)
 %% Run
+
+% Read settings
+outputPath = dS.outputPath; subjStr = dS.subjStr;
 
 do_plot = 0;
 
 % SPMMat to be used as input
-subjStr = strcat('00',num2str(subject));
-subjStr = subjStr(end-2:end);
 SPMMatPath = strcat(outputPath,'sub',subjStr,'/',VBMethod,'/');
 load(strcat(SPMMatPath,'SPM.mat'));
 

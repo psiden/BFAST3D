@@ -7,22 +7,24 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2016-06-09
-% REVISED:      
+% REVISED:      2017-10-26
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function preprocessing(dataPath,SPMPath,subject)
+function preprocessing(dS)
 %% Run
+
+% Read settings
+dataPath = dS.dataPath; SPMPath = dS.SPMPath; subjStr = dS.subjStr;
+fileStr = dS.fileStr;
 
 % Add SPM path
 addpath(SPMPath);
 
 % BOLD path
-subjStr = strcat('00',num2str(subject));
-subjStr = subjStr(end-2:end);
-BOLDDataPath = strcat(dataPath,'sub',subjStr,'/BOLD/task001_run001/');
+BOLDDataPath = [dataPath,'sub-',subjStr,'/func/'];
 
 % Unpack nifti file
-gunzip(strcat(BOLDDataPath,'bold.nii.gz'));
+gunzip([BOLDDataPath,fileStr,'bold.nii.gz']);
 
 % Initialise SPM defaults
 spm('Defaults','fMRI');
@@ -30,7 +32,7 @@ spm_jobman('initcfg');
 
 % Realign
 clear matlabbatch
-f = strcat(BOLDDataPath,'bold.nii');
+f = [BOLDDataPath,fileStr,'bold.nii'];
 matlabbatch{1}.spm.spatial.realign.estwrite.data{1} = cellstr(f);
 spm_jobman('run',matlabbatch);
 

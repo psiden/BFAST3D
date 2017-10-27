@@ -1,5 +1,5 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PURPOSE:      Run estimation files for SVB/MCMC
+% PURPOSE:      Run estimation files for SVB/MCMC for BIDS format fMRI data
 %
 % AUTHOR:       Per Siden
 %               Division of Statistics and Machine Learning
@@ -7,7 +7,7 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2016-06-09
-% REVISED:      
+% REVISED:      2017-10-27
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Specify
@@ -15,39 +15,36 @@ clear all
 close all
 clc
 
-%% Setup
-
-dataPath = '.../ds105/';
-outputPath = '.../Results/';
-SPMPath = '.../spm12/';
-subject = 1;
+%% Setup data settings (dS)
+settings_ds105_01;
+subject = str2num(dS.subjStr);
 
 %% Preprocessing
 
 % Head motion correction
-preprocessing(dataPath,SPMPath,subject)
+preprocessing(dS);
 
 %% Run 3D
 
 % Run SVB
 VBMethod = 'SVB3D';
-runSVB(dataPath,outputPath,SPMPath,subject,VBMethod);
+runSVB(dS,VBMethod);
 
 % Run MCMC
 MCMCMethod = 'MCMC3D';
 samplingMethod = 'PCG';
-runMCMC(outputPath,subject,MCMCMethod,VBMethod,samplingMethod);
+runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
 
-% Compute marginal and joint PPMs
+Compute marginal and joint PPMs
 addpath(SPMPath);
 
-% Requires Tools for NIfTI and ANALYZE image Matlab-package
-computePPMs(outputPath,subject,VBMethod);
-computePPMs(outputPath,subject,MCMCMethod);
+Requires Tools for NIfTI and ANALYZE image Matlab-package
+computePPMs(dS.outputPath,subject,VBMethod);
+computePPMs(dS.outputPath,subject,MCMCMethod);
 
-% Requires excursions R-package
+Requires excursions R-package
 contrastNbr = 5;
-computeExcursions(outputPath,subject,MCMCMethod,contrastNbr,1)
+computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,1)
 
 rmpath(SPMPath);
 
@@ -55,23 +52,23 @@ rmpath(SPMPath);
 
 % Run SVB
 VBMethod = 'SVB2D';
-runSVB(dataPath,outputPath,SPMPath,subject,VBMethod);
+runSVB(dS,VBMethod);
 
 % Run MCMC
 MCMCMethod = 'MCMC2D';
 samplingMethod = 'PCG';
-runMCMC(outputPath,subject,MCMCMethod,VBMethod,samplingMethod);
+runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
 
 % Compute marginal and joint PPMs
 addpath(SPMPath);
 
 % Requires Tools for NIfTI and ANALYZE image Matlab-package
-computePPMs(outputPath,subject,VBMethod);
-computePPMs(outputPath,subject,MCMCMethod);
+computePPMs(dS.outputPath,subject,VBMethod);
+computePPMs(dS.outputPath,subject,MCMCMethod);
 
 % Requires excursions R-package
 contrastNbr = 5;
 sliceNbr = 30;
-computeExcursions(outputPath,subject,MCMCMethod,contrastNbr,sliceNbr)
+computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,sliceNbr)
 
 rmpath(SPMPath);

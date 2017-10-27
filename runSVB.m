@@ -1,10 +1,7 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PURPOSE:      Run SVB estimation
+% PURPOSE:      Run SVB estimation for BIDS format fMRI data
 %
-% INPUT:        dataPath - string containing openfMRI data folder
-%               outputPath - string containing output folder
-%               SPMPath - string containing SPM path
-%               subject - subject number (int)
+% INPUT:        dS - data settings struct
 %               VBMethod - string containing estimation method,
 %                                  possible options: SPMsVB2d, SPMsVB3d,
 %                                  ImprovedVB2d, ImprovedVB3d.
@@ -15,11 +12,16 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2016-06-09
-% REVISED:      
+% REVISED:      2017-10-26
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function runSVB(dataPath,outputPath,SPMPath,subject,VBMethod)
+function runSVB(dS,VBMethod)
 %% Run
+
+% Read settings
+dataPath = dS.dataPath; outputPath = dS.outputPath; SPMPath = dS.SPMPath; 
+subjStr = dS.subjStr; fileStr = dS.fileStr; TR = dS.TR;
+condStr = dS.condStr; contrastStr = dS.contrastStr;
 
 % SPM Paths
 SPMPath2 = strcat(SPMPath,'/svb');
@@ -29,31 +31,25 @@ addpath(SPMPath2);
 addpath(SPMPath3);
 
 % BOLD path
-subjStr = strcat('00',num2str(subject));
-subjStr = subjStr(end-2:end);
-BOLDDataPath = strcat(dataPath,'sub',subjStr,'/BOLD/task001_run001/');
+BOLDDataPath = [dataPath,'sub-',subjStr,'/func/'];
 
 % Results path
-resultsPath = strcat(outputPath,'sub',subjStr,'/',VBMethod);
+resultsPath = [outputPath,'sub-',subjStr,'/',VBMethod];
 mkdir(resultsPath);
 
 % Delete old SPM file
 SPMFile = strcat(resultsPath,'/SPM.mat'); 
 if exist(SPMFile,'file')==2 
-    %system(['rm' SPMFile]); % Linux 
-    delete(SPMFile) 
+  %system(['rm' SPMFile]); % Linux 
+  delete(SPMFile) 
 end
 
 % Initialise SPM defaults
 spm('Defaults','fMRI');
 spm_jobman('initcfg');
 
-% Repetition time
-TRCell = textscan(fopen(strcat(dataPath,'scan_key.txt')),'%s%f'); 
-TR = TRCell{2};
-
 % Number of fMRI volumes
-load(strcat(BOLDDataPath,'bold.mat'),'mat');
+load([BOLDDataPath,fileStr,'bold.mat'],'mat');
 TRs = size(mat,3); 
 clear mat;
 
@@ -64,32 +60,30 @@ matlabbatch{1}.spm.stats.fmri_spec.timing.units = 'secs';
 matlabbatch{1}.spm.stats.fmri_spec.timing.RT = TR;
 scans = cell(TRs,1);
 for t = 1:TRs
-    scans{t} = strcat(BOLDDataPath,'rbold.nii,',num2str(t));
+  scans{t} = [BOLDDataPath,'r',fileStr,'bold.nii,',num2str(t)];
 end
 matlabbatch{1}.spm.stats.fmri_spec.sess.scans = scans;
 
 % Conditions
-condPath = strcat(dataPath,'sub',subjStr,'/model/model001/onsets/task001_run001');
-condCell = readTaskFile(strcat(strcat(dataPath,'models/model001/condition_key.txt'))); 
+condCell = readTaskFile([dataPath,condStr]); 
+eventCell = readTaskFile([BOLDDataPath,fileStr,'events.tsv']); 
 nCond = size(condCell,1);
+nEvents = size(eventCell,1);
 for k = 1:nCond
-    kStr = strcat('00',num2str(k));
-    kStr = kStr(end-2:end);
-    fid = fopen(strcat(condPath,'/cond',kStr,'.txt'));
-    text = textscan(fid,'%f%f%f'); % Read 3 floats
-    fclose(fid);
-
-    onsets = text{1}; 
-    durations = text{2};
-    values = text{3};
-
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(k).name = condCell{k,3};
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(k).onset = onsets;
-    matlabbatch{1}.spm.stats.fmri_spec.sess.cond(k).duration = durations;
+  onsets = []; durations = [];
+  for j = 1:nEvents
+    if strcmp(condCell{k,3},eventCell{j,3})
+      onsets = [onsets;str2num(eventCell{j,1})]; 
+      durations = [durations;str2num(eventCell{j,2})]; 
+    end
+  end  
+  matlabbatch{1}.spm.stats.fmri_spec.sess.cond(k).name = condCell{k,3};
+  matlabbatch{1}.spm.stats.fmri_spec.sess.cond(k).onset = onsets;
+  matlabbatch{1}.spm.stats.fmri_spec.sess.cond(k).duration = durations;
 end
 
 % Contrasts
-fid = fopen(strcat(dataPath,'/models/model001/task_contrasts.txt'));
+fid = fopen([dataPath,contrastStr]);
 commandString = ['%s%s']; % Always start by reading two strings
 for k = 1:nCond % Read one float for each regressor
     commandString = [commandString '%f'];
@@ -108,7 +102,7 @@ for k = 1:nContrasts
 end
 
 % Head motion parameters
-hmpFile = strcat(BOLDDataPath,'rp_bold.txt');
+hmpFile = [BOLDDataPath,'rp_',fileStr,'bold.txt'];
 matlabbatch{1}.spm.stats.fmri_spec.sess.multi_reg = cellstr(hmpFile);
 
 % High-pass filter
