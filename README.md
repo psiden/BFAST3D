@@ -16,7 +16,9 @@ http://www.fil.ion.ucl.ac.uk/spm/software/spm12/).
 
 runExample.m gives an example on how to run the code and calls the functions runSVB.m
 and runMCMC.m which are adapted for the OpenfMRI data ds105, available at
-https://openfmri.org/dataset/ds000105/. Use at own risk.
+https://openfmri.org/dataset/ds000105/. The current version supports BIDS-format (ds105
+v.2.0.2), but requires the condition and contrast files (condition_key.txt and task_contrasts.txt)
+from an earlier version (ds105 v.1.0.1) Use at own risk.
 
 In the current version, various settings are defined in different files and some of these are
 described below:
@@ -32,7 +34,7 @@ the PCG tolerance d (default 10^-8).
 MCMC iterations, warmup iterations, thinning factor and PCG tolerance d can be
 changed by changing the variables niter, warmup, thinningFactor and PCGTol.
 
-Post-processing computePPMs.m depends on the Tools for NIfTI and ANALYZE imagepackage
+The code requires MATLAB_R2016a or later. Post-processing computePPMs.m depends on the Tools for NIfTI and ANALYZE imagepackage
 (http://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image).
 To compute joint PPMs, R is required and so is the excursions-package (Bolin and Lindgren,
 2015), development version (https://bitbucket.org/davidbolin/excursions) and also
