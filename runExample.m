@@ -36,7 +36,7 @@ samplingMethod = 'PCG';
 runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
 
 % Compute marginal and joint PPMs
-addpath(SPMPath);
+addpath(dS.SPMPath);
 
 % Requires Tools for NIfTI and ANALYZE image Matlab-package
 computePPMs(dS.outputPath,subject,VBMethod);
@@ -46,7 +46,7 @@ computePPMs(dS.outputPath,subject,MCMCMethod);
 contrastNbr = 5;
 computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,1)
 
-rmpath(SPMPath);
+rmpath(dS.SPMPath);
 
 %% Run 2D
 
@@ -60,7 +60,7 @@ samplingMethod = 'PCG';
 runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
 
 % Compute marginal and joint PPMs
-addpath(SPMPath);
+addpath(dS.SPMPath);
 
 % Requires Tools for NIfTI and ANALYZE image Matlab-package
 computePPMs(dS.outputPath,subject,VBMethod);
@@ -71,4 +71,4 @@ contrastNbr = 5;
 sliceNbr = 30;
 computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,sliceNbr)
 
-rmpath(SPMPath);
+rmpath(dS.SPMPath);
