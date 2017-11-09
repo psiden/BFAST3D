@@ -72,7 +72,7 @@ nEvents = size(eventCell,1);
 for k = 1:nCond
   onsets = []; durations = [];
   for j = 1:nEvents
-    if strcmp(condCell{k,3},eventCell{j,3})
+    if strcmp(strcat(condCell{k,3}),strcat(eventCell{j,3}))
       onsets = [onsets;str2num(eventCell{j,1})]; 
       durations = [durations;str2num(eventCell{j,2})]; 
     end
