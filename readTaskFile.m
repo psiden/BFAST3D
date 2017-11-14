@@ -22,8 +22,12 @@ while ischar(tline)
 %     disp(tline)
     spaceInd = [strfind(tline,' '),strfind(tline,char(9))];
     cellMat{i,1} = tline(1:spaceInd(1)-1);
-    cellMat{i,2} = tline(spaceInd(1)+1:spaceInd(2)-1);
-    cellMat{i,3} = tline(spaceInd(2)+1:end);
+    cellMat{i,2} = tline(spaceInd(1)+1:spaceInd(2)-1);    
+    if length(spaceInd) == 2
+      cellMat{i,3} = tline(spaceInd(2)+1:end);
+    else
+      cellMat{i,3} = tline(spaceInd(2)+1:spaceInd(3)-1);
+    end
     tline = fgets(fileID);
     i = i + 1;
 end
