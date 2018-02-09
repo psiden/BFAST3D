@@ -1,5 +1,5 @@
 library(R.matlab)
-library(excursionsdevel)
+library(excursions)
 
 outputPath = commandArgs(TRUE)[1]
 method = commandArgs(TRUE)[2]

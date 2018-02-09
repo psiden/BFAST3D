@@ -37,8 +37,7 @@ changed by changing the variables niter, warmup, thinningFactor and PCGTol.
 The code requires MATLAB_R2016a or later. Post-processing computePPMs.m depends on the Tools for NIfTI and ANALYZE imagepackage
 (http://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image).
 To compute joint PPMs, R is required and so is the excursions-package (Bolin and Lindgren,
-2015), development version (https://bitbucket.org/davidbolin/excursions) and also
-the R-package R.matlab. Be aware that for large data sets the time and memory requirements
+2015), and also the R-package R.matlab. Be aware that for large data sets the time and memory requirements
 can be quite demanding, especially for MCMC, which can be quick-fixed by limiting
 the number of iterations.
 

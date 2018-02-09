@@ -8,7 +8,7 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2016-03-23
-% REVISED:      
+% REVISED:      2017-11-24
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function cellMat = readTaskFile(filePath)
@@ -20,7 +20,7 @@ tline = fgets(fileID);
 i = 1;
 while ischar(tline)
 %     disp(tline)
-    spaceInd = [strfind(tline,' '),strfind(tline,char(9))];
+    spaceInd = sort([strfind(tline,' '),strfind(tline,char(9))]);
     cellMat{i,1} = tline(1:spaceInd(1)-1);
     cellMat{i,2} = tline(spaceInd(1)+1:spaceInd(2)-1);    
     if length(spaceInd) == 2
