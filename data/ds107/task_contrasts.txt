@@ -1,0 +1,2 @@
+task001 objects_vs_scrambled 0 1 -1 0
+task001 words_vs_consonants 1 0 0 -1

@@ -1,0 +1,4 @@
+task001 cond001 Words
+task001 cond002 Objects
+task001 cond003 Scrambled
+task001 cond004 Consonant
