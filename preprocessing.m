@@ -1,5 +1,5 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PURPOSE:      Unpack and realignment for OpenfMRI datasets
+% PURPOSE:      Motion correction for openneuro datasets
 %
 % AUTHOR:       Per Siden
 %               Division of Statistics and Machine Learning
@@ -7,7 +7,7 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2016-06-09
-% REVISED:      2017-10-26
+% REVISED:      2019-02-18
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function preprocessing(dS)

@@ -7,7 +7,7 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2016-06-09
-% REVISED:      2017-10-27
+% REVISED:      2019-06-25
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Specify
@@ -16,8 +16,11 @@ close all
 clc
 
 %% Setup data settings (dS)
-settings_ds105_01;
+settings_ds107_10;
 subject = str2num(dS.subjStr);
+
+%% Download data
+download_ds107_data(dS);
 
 %% Preprocessing
 
@@ -25,6 +28,22 @@ subject = str2num(dS.subjStr);
 preprocessing(dS);
 
 %% Run 3D
+
+% Run Dummy VB (Dummy method to convert data into SPM.mat format)
+VBMethod = 'DVB3D';
+runSVB(dS,VBMethod);
+
+% Run EB Matern
+fS.boldPath = dS.boldPath; 
+fS.dataPath = [dS.outputPath,'sub-',dS.subjStr,'/'];
+fS.outputPath = fS.dataPath;
+fS.SPMResultsFolder = VBMethod;
+fS.ResultsFolder = 'M2Iso3dEyeFix';
+fS.doPlot = 0;
+fS.doParallel = 0;
+fS.maxiter = 200;
+addpath(genpath('eb'));
+runEBMatern(fS);
 
 % Run SVB
 VBMethod = 'SVB3D';
@@ -39,36 +58,35 @@ runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
 addpath(dS.SPMPath);
 
 % Requires Tools for NIfTI and ANALYZE image Matlab-package
+computePPMs(dS.outputPath,subject,'EBMatern',fS);
 computePPMs(dS.outputPath,subject,VBMethod);
 computePPMs(dS.outputPath,subject,MCMCMethod);
 
 % Requires excursions R-package
-contrastNbr = 5;
+contrastNbr = 1;
 computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,1)
 
-rmpath(dS.SPMPath);
-
-%% Run 2D
-
-% Run SVB
-VBMethod = 'SVB2D';
-runSVB(dS,VBMethod);
-
-% Run MCMC
-MCMCMethod = 'MCMC2D';
-samplingMethod = 'PCG';
-runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
-
-% Compute marginal and joint PPMs
-addpath(dS.SPMPath);
-
-% Requires Tools for NIfTI and ANALYZE image Matlab-package
-computePPMs(dS.outputPath,subject,VBMethod);
-computePPMs(dS.outputPath,subject,MCMCMethod);
-
-% Requires excursions R-package
-contrastNbr = 5;
-sliceNbr = 30;
-computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,sliceNbr)
+% %% Run 2D
+% 
+% % Run SVB
+% VBMethod = 'SVB2D';
+% runSVB(dS,VBMethod);
+% 
+% % Run MCMC
+% MCMCMethod = 'MCMC2D';
+% samplingMethod = 'PCG';
+% runMCMC(dS,MCMCMethod,VBMethod,samplingMethod);
+% 
+% % Compute marginal and joint PPMs
+% addpath(dS.SPMPath);
+% 
+% % Requires Tools for NIfTI and ANALYZE image Matlab-package
+% computePPMs(dS.outputPath,subject,VBMethod);
+% computePPMs(dS.outputPath,subject,MCMCMethod);
+% 
+% % Requires excursions R-package
+% contrastNbr = 1;
+% sliceNbr = 7;
+% computeExcursions(dS.outputPath,subject,MCMCMethod,contrastNbr,sliceNbr)
 
 rmpath(dS.SPMPath);

@@ -24,8 +24,7 @@ PPMwPercThresh = .005;
 %% Run
 if findstr(method,'MCMC3D'); sliceNbr = 1; end;
 
-subjStr = strcat('00',num2str(subject));
-subjStr = subjStr(end-2:end);
+subjStr = ['-',num2str(subject)];
 resultsPath = strcat(outputPath,'sub',subjStr,'/',method);
 num = strcat('000',num2str(contrastNbr));
 num = num(end-3:end);

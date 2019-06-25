@@ -731,6 +731,12 @@ else
 end
 nlb     = histc(Lb(:),[1:max(Lb(:))])';
 
+% Added by Per Siden 2016-06-09 (for full volume brain as one parcel)
+vol = 1;
+mask = spm_read_vols(spm_vol(VM));
+nLb = 1;
+Lb = mask;
+
 %-Write VLabel
 %-----------------------------------------------------------------------
 VLabel  = spm_write_plane(VLabel,Lb,':'); 
@@ -862,6 +868,7 @@ for z = 1:nLb
                 block = spm_vb_robust(R0Y,block);
             otherwise
                 tic
+                block.maxits = 1; % For dummy
                 block = spm_svb_glmar(R0Y,block);
                 timeTaken = toc;
         end

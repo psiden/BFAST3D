@@ -27,11 +27,11 @@ outputPath = dS.outputPath; subjStr = dS.subjStr;
 do_plot = 0;
 
 % SPMMat to be used as input
-SPMMatPath = strcat(outputPath,'sub',subjStr,'/',VBMethod,'/');
+SPMMatPath = strcat(outputPath,'sub-',subjStr,'/',VBMethod,'/');
 load(strcat(SPMMatPath,'SPM.mat'));
 
 % Create output folder
-resultsPath = strcat(outputPath,'sub',subjStr,'/',estimationMethod);
+resultsPath = strcat(outputPath,'sub-',subjStr,'/',estimationMethod);
 mkdir(resultsPath);
 
 % Slice independent parameters
@@ -638,6 +638,6 @@ for iLb = 1:nLb
     
 end
 
-save(strcat(outputPath,'sub',subjStr,'/',estimationMethod,'/MCMC.mat'),'MCMC','-v7.3');
+save(strcat(outputPath,'sub-',subjStr,'/',estimationMethod,'/MCMC.mat'),'MCMC','-v7.3');
 disp('done.');
 

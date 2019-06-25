@@ -668,20 +668,24 @@ end
 fprintf('\n')
 
 %-Remove small clusters - removes clusters containing < 16 voxels 
+% Edit Per Siden 2017-11-30: Make this 400 voxels 
 %-----------------------------------------------------------------------
 mask        = spm_read_vols(spm_vol(VM));
 
 [Cl,nCl]    = spm_bwlabel(mask,6);
 ncl         = histc(Cl(:),[1:max(Cl(:))])';
-if any(ncl < 16)
-    incl = find(ncl < 16);
+% if any(ncl < 16)
+%     incl = find(ncl < 16);
+if any(ncl < 400)
+    incl = find(ncl < 400);
     for j = 1:length(incl),
         mask(find(Cl==incl(j))) = 0;
     end
-    VM          = spm_write_plane(VM, mask, ':');
-    [Cl,nCl]    = spm_bwlabel(mask,6);
-    ncl         = histc(Cl(:),[1:max(Cl(:))])';
 end
+
+VM          = spm_write_plane(VM, mask, ':');
+[Cl,nCl]    = spm_bwlabel(mask,6);
+ncl         = histc(Cl(:),[1:max(Cl(:))])';
 
 %-Compute labels
 %-----------------------------------------------------------------------
