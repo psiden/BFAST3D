@@ -8,7 +8,7 @@ classdef Matern2Iso < handle
   %               Linkoping University
   %
   % FIRST VER.:   2017-09-06
-  % REVISED.:     2017-10-10
+  % REVISED.:     2020-09-30
   
   properties
     
@@ -75,13 +75,23 @@ classdef Matern2Iso < handle
       ob.paramPriorName = 'PC';
       ob.PCPalpha = 0.05;
       
-      if ob.isIntrinsic
-        % tau2 PC prior
-        ob.PCPsigma0 = 4;
-        if ob.ndim == 2
-          ob.PCPlambda2 = -log(ob.PCPalpha) / (sqrt(20)*ob.PCPsigma0);
-        elseif ob.ndim == 3
-          ob.PCPlambda2 = -log(ob.PCPalpha) / (sqrt(42)*ob.PCPsigma0);          
+      if ob.isIntrinsic        
+        if strcmp(ob.paramPriorName,'PC')
+          % tau2 PC prior
+          ob.PCPsigma0 = 2 / fM.fS.sf;
+          if ob.ndim == 2
+            error('No support for this ICAR hyperparameter prior in 2D.')
+          elseif ob.ndim == 3
+            ob.PCPlambda2 = -log(ob.PCPalpha) * sqrt(0.76) / ob.PCPsigma0;  
+          end
+        elseif strcmp(ob.paramPriorName,'PC_cond')
+          % tau2 PC prior
+          ob.PCPsigma0 = 4;
+          if ob.ndim == 2
+            ob.PCPlambda2 = -log(ob.PCPalpha) / (sqrt(20)*ob.PCPsigma0);
+          elseif ob.ndim == 3
+            ob.PCPlambda2 = -log(ob.PCPalpha) / (sqrt(42)*ob.PCPsigma0);          
+          end
         end
         ob.tau2HB = [1e-5,10];
       else
@@ -237,6 +247,8 @@ classdef Matern2Iso < handle
                 -ob.tau2*fM.M(k,:)*ob.Kk*fM.M(k,:)' - ob.tau2*traceKappa2 ...
                 -ob.kappa2*ob.tau2*fM.M(k,:)*ob.C*fM.M(k,:)' - ...
                 ob.kappa2*ob.tau2*traceKappa4) + d2PriorKappa0;  
+    %         dtau0dkappa0 = -ob.kappa2*ob.tau2*(traceKappa2 + fM.M(k,:)*ob.Kk*fM.M(k,:)');
+    %         Hess = [d2tau0,dtau0dkappa0;dtau0dkappa0,d2kappa0];
             d2kappa0 = d2kappa0.*sign(-d2kappa0);      
           end        
         else

@@ -8,6 +8,7 @@ classdef FMRIModel < handle
   %               Linkoping University
   %
   % FIRST VER.:   2017-09-05
+  % REVISED.:     2020-09-30
   
   properties
     
@@ -203,7 +204,7 @@ classdef FMRIModel < handle
       
       fM.muTilde = fM.muTildeReo(fM.ireoQ);
       fM.M = reshape(fM.muTilde,[N,K])';
-
+      
       if fM.fS.useRobbinsMonro
         if fM.iter >= fM.fS.startIterRobbinsMonro
           fM.hessAlpha = fM.fS.hessAlphaStart/(.1*(fM.iter-fM.fS.startIterRobbinsMonro)+1);
@@ -343,7 +344,7 @@ classdef FMRIModel < handle
         nbrOfVoxelsToPlot = 100; stepMNOVTP = ceil(fM.N / nbrOfVoxelsToPlot);
         tau2Vec = fM.priorList{1}.tau2Vec'; kappa2Vec = fM.priorList{1}.kappa2Vec';
         for k = 2:fM.fS.K
-          if k == 3 || k == 5 || k == 7
+          if (k == 3 || k == 5 || k == 7) && contains(fM.priorList{k}.priorName,'Matern')
             tau2Vec = [tau2Vec;fM.priorList{k}.tau2Vec'];
             kappa2Vec = [kappa2Vec;fM.priorList{k}.kappa2Vec'];
           end
@@ -359,7 +360,7 @@ classdef FMRIModel < handle
         if strcmp(fM.priorList{1}.priorName,'Matern2Aniso')
           hxVec = fM.priorList{1}.hxVec'; hyVec = fM.priorList{1}.hyVec';
           for k = 2:fM.fS.K
-            if k == 3 || k == 5 || k == 7              
+            if (k == 3 || k == 5 || k == 7) && strcmp(fM.priorList{k}.priorName,'Matern2Aniso')
               hxVec = [hxVec;fM.priorList{k}.hxVec'];
               hyVec = [hyVec;fM.priorList{k}.hyVec'];
             end
@@ -423,7 +424,7 @@ classdef FMRIModel < handle
         if flag ~= 0; disp(['Warning: PCG flag=',num2str(flag),' for mean.']); end
         
         if computeVariance
-                    
+          
           % Estimation by simple RBMC 
           try [M1,fM.startIcholEps1] = icholSafe(QTildeReo,fM.startIcholEps1,fM.fS.maxIcholEps);
           catch; M1 = spdiags(1./sqrt(diag(QTildeReo)),0,N*K,N*K); end;

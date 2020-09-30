@@ -9,7 +9,7 @@ classdef Matern2Aniso < handle
   %               Linkoping University
   %
   % FIRST VER.:   2017-11-14
-  % REVISED.:     2018-02-26
+  % REVISED.:     2020-09-30
   
   properties
     
@@ -48,6 +48,10 @@ classdef Matern2Aniso < handle
     d2tau0Avg, d2kappa0Avg
     deltaTau0, deltaKappa0
     dh0xAvg, dh0yAvg, d2h0xAvg, d2h0yAvg, deltah0x, deltah0y
+    dtau0Vec, dkappa0Vec, dh0xVec, dh0yVec
+    dtau0AvgVec, dkappa0AvgVec, dh0xAvgVec, dh0yAvgVec % Gradient storage
+    d2tau0Vec, d2kappa0Vec, d2h0xVec, d2h0yVec
+    d2tau0AvgVec, d2kappa0AvgVec, d2h0xAvgVec, d2h0yAvgVec % Hessian storage
     
   end
   
@@ -133,6 +137,18 @@ classdef Matern2Aniso < handle
       if fM.fS.ndim == 3
         ob.hyVec = zeros(fM.fS.maxiter+1,1);ob.hyVec(1) = ob.hy;
       end
+      
+      % Gradient storage matrices
+      ob.dtau0AvgVec = zeros(fM.fS.maxiter+1,1);
+      ob.dkappa0AvgVec = zeros(fM.fS.maxiter+1,1);
+      ob.dh0xAvgVec = zeros(fM.fS.maxiter+1,1);
+      ob.dh0yAvgVec = zeros(fM.fS.maxiter+1,1);
+      
+      % Hessian storage matrices
+      ob.d2tau0AvgVec = zeros(fM.fS.maxiter+1,1);
+      ob.d2kappa0AvgVec = zeros(fM.fS.maxiter+1,1);
+      ob.d2h0xAvgVec = zeros(fM.fS.maxiter+1,1);
+      ob.d2h0yAvgVec = zeros(fM.fS.maxiter+1,1);      
       
     end
     function Qk = computeQk(ob)
@@ -340,11 +356,11 @@ classdef Matern2Aniso < handle
                   (nu-1)*ob.PCPlambda3*nu*ob.kappa2^(1/2*(nu-1))*ob.tau2^(-1/2));            
           end
         end
-        dPriorh0x = 2/(3*ob.sigmah^2)*(log(ob.hx)+log(ob.hy)/2);
-        dPriorh0y = 2/(3*ob.sigmah^2)*(log(ob.hy)+log(ob.hx)/2);
+        dPriorh0x = -2/(3*ob.sigmah^2)*(log(ob.hx)+log(ob.hy)/2);
+        dPriorh0y = -2/(3*ob.sigmah^2)*(log(ob.hy)+log(ob.hx)/2);
         if fM.fS.useHess
-          d2Priorh0x = 2/(3*ob.sigmah^2);
-          d2Priorh0y = 2/(3*ob.sigmah^2);
+          d2Priorh0x = -2/(3*ob.sigmah^2);
+          d2Priorh0y = -2/(3*ob.sigmah^2);
         end
         
         % Reparameterize
@@ -388,6 +404,7 @@ classdef Matern2Aniso < handle
           if fM.fS.useHess
             d2h0x = -traceh0x3 + traceh0x4 - ob.tau2*fM.M(k,:)*H2x*fM.M(k,:)' ...
                         -ob.tau2*traceh0x5 + d2Priorh0x;
+            d2h0x = d2h0x.*sign(-d2h0x);
           end
         else
           dh0x = 0; d2h0x = -1;
@@ -399,6 +416,7 @@ classdef Matern2Aniso < handle
           if fM.fS.useHess
             d2h0y = -traceh0y3 + traceh0y4 - ob.tau2*fM.M(k,:)*H2y*fM.M(k,:)' ...
                         -ob.tau2*traceh0y5 + d2Priorh0y;
+            d2h0y = d2h0y.*sign(-d2h0y);
           end
         else
           dh0y = 0; d2h0y = -1;
@@ -427,6 +445,8 @@ classdef Matern2Aniso < handle
                            (fM.hessAlpha/ob.d2tau0Avg)*ob.dtau0Avg;
             ob.deltaKappa0 = fM.fS.momPrior*ob.deltaKappa0 - ...
                              (fM.hessAlpha/ob.d2kappa0Avg)*ob.dkappa0Avg;
+%             ob.deltah0x = fM.fS.gradGain*ob.gradGainAniso*ob.dh0xAvg;
+%             ob.deltah0y = fM.fS.gradGain*ob.gradGainAniso*ob.dh0yAvg;
             ob.deltah0x = fM.fS.momPrior*ob.deltah0x - ...
                            (fM.hessAlpha/ob.d2h0xAvg)*ob.dh0xAvg;
             ob.deltah0y = fM.fS.momPrior*ob.deltah0y - ...
@@ -434,12 +454,16 @@ classdef Matern2Aniso < handle
           else      
             ob.deltaTau0 = fM.fS.gradGain*dtau0;
             ob.deltaKappa0 = fM.fS.gradGain*dkappa0;
+%             ob.deltah0x = fM.fS.gradGain*ob.gradGainAniso*dh0x;
+%             ob.deltah0y = fM.fS.gradGain*ob.gradGainAniso*dh0y;
             ob.deltah0x = fM.fS.gradGain*dh0x;
             ob.deltah0y = fM.fS.gradGain*dh0y;
           end
         else
           ob.deltaTau0 = fM.fS.gradGain*dtau0;
           ob.deltaKappa0 = fM.fS.gradGain*dkappa0;
+%           ob.deltah0x = fM.fS.gradGain*ob.gradGainAniso*dh0x;
+%           ob.deltah0y = fM.fS.gradGain*ob.gradGainAniso*dh0y;  
           ob.deltah0x = fM.fS.gradGain*dh0x;
           ob.deltah0y = fM.fS.gradGain*dh0y;        
         end
@@ -478,6 +502,29 @@ classdef Matern2Aniso < handle
       % Save in vector
       ob.tau2Vec(fM.iter) = ob.tau2; ob.kappa2Vec(fM.iter) = ob.kappa2; 
       ob.hxVec(fM.iter) = ob.hx; ob.hyVec(fM.iter) = ob.hy; 
+      
+      % Store gradients
+      ob.dtau0Vec(fM.iter) = dtau0';
+      ob.dkappa0Vec(fM.iter) = dkappa0';
+      ob.dh0xVec(fM.iter) = dh0x'; 
+      ob.dh0yVec(fM.iter) = dh0y';
+      ob.dtau0AvgVec(fM.iter) = ob.dtau0Avg;
+      ob.dkappa0AvgVec(fM.iter) = ob.dkappa0Avg;
+      ob.dh0xAvgVec(fM.iter) = ob.dh0xAvg; 
+      ob.dh0yAvgVec(fM.iter) = ob.dh0yAvg;
+      
+      % Store Hessians
+      if fM.fS.useHess
+        ob.d2tau0Vec(fM.iter) = d2tau0';
+        ob.d2kappa0Vec(fM.iter) = d2kappa0';
+        ob.d2h0xVec(fM.iter) = d2h0x';
+        ob.d2h0yVec(fM.iter) = d2h0y';
+        ob.d2tau0AvgVec(fM.iter) = ob.d2tau0Avg;
+        ob.d2kappa0AvgVec(fM.iter) = ob.d2kappa0Avg;
+        ob.d2h0xAvgVec(fM.iter) = ob.d2h0xAvg;
+        ob.d2h0yAvgVec(fM.iter) = ob.d2h0yAvg;
+      end
+      
       
     end    
     function doPolyakAveraging(ob,fM)

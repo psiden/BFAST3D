@@ -8,7 +8,7 @@ classdef Matern1Iso < handle
   %               Linkoping University
   %
   % FIRST VER.:   2017-10-07
-  % REVISED.:
+  % REVISED.:     2020-09-30
   
   properties
     
@@ -73,9 +73,17 @@ classdef Matern1Iso < handle
       ob.PCPalpha = 0.05;
       
       if ob.isIntrinsic
-        ob.paramPriorName = 'PC'; % 'Gamma'; % 
+        ob.paramPriorName = 'PC'; % 'PC_cond'; % 'Gamma'; % 
         
         if strcmp(ob.paramPriorName,'PC')
+          % tau2 PC prior
+          ob.PCPsigma0 = 2 / fM.fS.sf;
+          if ob.ndim == 2
+            error('No support for this ICAR hyperparameter prior in 2D.')
+          elseif ob.ndim == 3
+            ob.PCPlambda2 = -log(ob.PCPalpha) * sqrt(0.29) / ob.PCPsigma0;          
+          end
+        elseif strcmp(ob.paramPriorName,'PC_cond')
           % tau2 PC prior
           ob.PCPsigma0 = 0.5 / fM.fS.sf;
           if ob.ndim == 2
@@ -180,7 +188,7 @@ classdef Matern1Iso < handle
 
         % Prior contributions
         if ob.isIntrinsic
-          if strcmp(ob.paramPriorName,'PC')
+          if strcmp(ob.paramPriorName,'PC') || strcmp(ob.paramPriorName,'PC_cond')
             dPriorTau2 = -3./(2*ob.tau2) + ob.PCPlambda2/2.*ob.tau2.^(-3/2);
             if fM.fS.useHess
               d2PriorTau0 = -ob.PCPlambda2/4*ob.tau2^(-1/2);

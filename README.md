@@ -1,6 +1,6 @@
 # BFAST3D
 This document describes the **B**ayesian **F**ast **A**ccurate **S**patial **T**ricks in **3D** (BFAST3D) code
-that can be used to run fMRI analysis with spatial priors using empricial Bayes and the Matérn prior (EBMatern, Sidén et al. 2019) and Spatial variational Bayes (SVB) and Markov chain Monte Carlo (MCMC) methods for fMRI analysis in Sidén et al. (2017). The code is an add-on to the SPM12 software (Ashburner et al., 2013) and to its Bayesian single subject method (Penny et al., 2003, 2005b,a, 2007; Penny and Flandin, 2005). Posterior standard deviations and PPMs are computed using the simple RBMC method described in Sidén et al. (2018). To use the code, follow these steps:
+that can be used to run fMRI analysis with spatial priors using empricial Bayes and the Matérn prior (EBMatern, Sidén et al. 2020) and Spatial variational Bayes (SVB) and Markov chain Monte Carlo (MCMC) methods for fMRI analysis in Sidén et al. (2017). The code is an add-on to the SPM12 software (Ashburner et al., 2013) and to its Bayesian single subject method (Penny et al., 2003, 2005b,a, 2007; Penny and Flandin, 2005). Posterior standard deviations and PPMs are computed using the simple RBMC method described in Sidén et al. (2018). To use the code, follow these steps:
 
 (1) Download/duplicate your spm12-directory (downloadable at
 http://www.fil.ion.ucl.ac.uk/spm/software/spm12/).
@@ -53,4 +53,4 @@ REFERENCES
 * Penny, W. D., Trujillo-Barreto, N. J., and Friston, K. J. (2005b). Bayesian fMRI time series analysis with spatial priors. NeuroImage, 24(2):350–362. 
 * Sidén, P., Eklund, A., Bolin, D., and Villani, M. (2017). Fast Bayesian whole-brain fMRI analysis with spatial 3D priors. NeuroImage, 146:211–225.
 * Sidén, P., Lindgren, F., Bolin, D., and Villani, M. (2018). Efficient covariance approximations for large sparse precision matrices. Journal of Computational and Graphical Statistics, 27(4), 898-909.
-* Sidén, P., Lindgren, F., Bolin, D., and Villani, M. (2019). Spatial 3D Matérn priors for fast whole-brain fMRI analysis. arXiv preprint.
+* Sidén, P., Lindgren, F., Bolin, D., and Villani, M. (2020). Spatial 3D Matérn priors for fast whole-brain fMRI analysis. arXiv preprint.
